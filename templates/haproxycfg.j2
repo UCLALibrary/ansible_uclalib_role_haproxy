@@ -1,0 +1,37 @@
+global
+  maxconn 4096
+  log 127.0.0.1:514   local4
+  nbproc 4
+  user haproxy
+  group haproxy
+  daemon
+
+defaults
+  log     global
+  mode    http
+  option  httplog
+  retries 3
+  maxconn 2000
+  balance roundrobin
+
+frontend {{ frontend.ident }}
+  bind 0.0.0.0:80
+  timeout client 30s
+{% if frontend.acl != '' %}
+  acl {{ frontend.acl }}
+{% endif %}
+{% if frontend.acl_cond != '' %}
+  {{ frontend.acl_cond }}
+{%  endif %}
+  default_backend {{ frontend.default_be }}
+
+{% for be in backends %}
+backend {{ be.ident }}
+  timeout connect 5s
+  timeout server 5s
+  option forwardfor
+  option httpchk {{ be.http_check }}
+{% for hostname in be.hosts %}
+  server {{ hostname }} {{ hostname }}.library.ucla.edu maxconn 512 check port 80
+{% endfor %}
+{% endfor %}

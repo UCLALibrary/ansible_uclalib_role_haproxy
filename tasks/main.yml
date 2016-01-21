@@ -1,0 +1,15 @@
+---
+
+- name: Copy HAproxy rpm file
+  copy: src={{ haproxy_rpm }} dest=/opt/{{ haproxy_rpm }} owner=root group=root mode=0644 force=no
+
+- name: Install HAproxy
+  yum: name=/opt/{{ haproxy_rpm }} state=installed
+
+- name: Ensure HAproxy starts on boot
+  service: name=haproxy enabled=yes
+
+- name: Put in place the haproxy configuration file and validate syntax
+  template: src=haproxycfg.j2 dest={{ haproxy_cfg_path }}/haproxy.cfg owner=root group=root mode=0644 validate='{{ haproxy_init_path }} check'
+  notify:
+    - restart haproxy
