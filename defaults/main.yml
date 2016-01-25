@@ -6,6 +6,8 @@ haproxy_rpm: haproxy-1.6.3-1.x86_64.rpm
 
 haproxy_cfg_path: /etc/haproxy
 
+haproxy_bin_path: /usr/sbin/haproxy
+
 frontend:
   - ident: fe
     acl: []

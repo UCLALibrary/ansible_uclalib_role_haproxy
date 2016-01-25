@@ -10,6 +10,6 @@
   service: name=haproxy enabled=yes
 
 - name: Put in place the haproxy configuration file and validate syntax
-  template: src=haproxycfg.j2 dest={{ haproxy_cfg_path }}/haproxy.cfg owner=root group=root mode=0644 validate='{{ haproxy_init_path }} check'
+  template: src=haproxycfg.j2 dest={{ haproxy_cfg_path }}/haproxy.cfg owner=root group=root mode=0644 validate='{{ haproxy_bin_path }} -c -q -V -f %s'
   notify:
     - restart haproxy
