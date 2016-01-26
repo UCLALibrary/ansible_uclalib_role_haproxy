@@ -1,7 +1,5 @@
 ---
 
-haproxy_init_path: /etc/init.d/haproxy
-
 haproxy_rpm: haproxy-1.6.3-1.x86_64.rpm
 
 haproxy_cfg_path: /etc/haproxy
