@@ -3,6 +3,12 @@
 - name: Copy HAproxy rpm file
   copy: src={{ haproxy_rpm }} dest=/opt/{{ haproxy_rpm }} owner=root group=root mode=0644 force=no
 
+- name: Create HAproxy group
+  group: name=haproxy state=present
+
+- name: Create HAproxy user
+  user: name=haproxy comment="HAProxy" shell=/bin/nologin group=haproxy createhome=no state=present
+
 - name: Install HAproxy
   yum: name=/opt/{{ haproxy_rpm }} state=installed
 
