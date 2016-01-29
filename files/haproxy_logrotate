@@ -1,0 +1,14 @@
+# used for rotation of haproxy logs
+/var/log/haproxy/haproxy.log {
+    compress
+    dateext
+    maxage 365
+    daily
+    rotate 30
+    notifempty
+    missingok
+    create 644 root root
+    postrotate
+     /etc/init.d/syslog-ng reload
+    endscript
+}

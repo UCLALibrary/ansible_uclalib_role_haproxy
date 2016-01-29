@@ -24,3 +24,14 @@
   lineinfile: dest=/etc/sysconfig/iptables state=present insertafter="^:OUTPUT " line="-A INPUT -p tcp -m state --state NEW -m tcp --dport 80 -j ACCEPT"
   notify:
     - restart iptables
+
+- name: Create HAproxy log directory
+  file: path=/var/log/haproxy state=directory
+
+- name: Put in place the Syslog-ng configuration for HAproxy logging
+  copy: src=syslog-ng.conf dest=/etc/syslog-ng/syslog-ng.conf owner=root group=root backup=yes validate='/sbin/syslog-ng -f %s -s'
+  notify:
+    - restart syslog-ng
+
+- name: Put in place the logrotate configuration for HAproxy
+  copy: src=haproxy_logrotate dest=/etc/logrotate.d/haproxy
