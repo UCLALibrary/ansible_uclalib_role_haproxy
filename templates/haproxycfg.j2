@@ -14,16 +14,20 @@ defaults
   maxconn 2000
   balance roundrobin
 
-frontend {{ frontend.ident }}
+frontend {{ frontend_ident }}
   bind 0.0.0.0:80
   timeout client 30s
-{% if frontend.acl != '' %}
-  acl {{ frontend.acl }}
+{% for rule in frontend_acls %}
+{% if rule.acl != '' %}
+  acl {{ rule.acl }}
 {% endif %}
-{% if frontend.acl_cond != '' %}
-  {{ frontend.acl_cond }}
-{%  endif %}
-  default_backend {{ frontend.default_be }}
+{% endfor %}
+{% for cond in frontend_aclconds %}
+{% if cond.aclcond != '' %}
+  {{ cond.aclcond }}
+{% endif %}
+{% endfor %}
+  default_backend {{ frontend_defaultbe }}
 
 {% for be in backends %}
 backend {{ be.ident }}
