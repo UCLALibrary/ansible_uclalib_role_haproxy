@@ -20,11 +20,15 @@ haproxy_cfg_path - path to the haproxy configuration directory (e.g. `/etc/hapro
 
 haproxy_bin_path - path to the haproxy binary (e.g. `/usr/sbin/haproxy`)
 
-frontend - this is the list variable for the haproxy frontend listener
-- ident - identifier name for the haproxy frontend
--  acl - optional acl parameters
--  acl_cond - if you define an acl above, use this to define the resulting behavior
--  default_be - define a default backend
+### Frontend Variables
+
+frontend_ident - identifier name for the haproxy frontend
+
+frontend_acls - list variable defining acl parameters for the frontend
+
+frontend_acl_conds - list variable defining acl conditions for the frontend acls
+
+frontend_default_be - define a default backend
 
 #### Sample frontend definition:
 ```
@@ -35,10 +39,12 @@ frontend:
   default_be: 'slave_solr'
 ```
 
-backends - this is the list/dictionary variable for the haproxy backends
-- ident - identifier name for the haproxy backend
--  http_check - define the http check command to determine health of backend
--  hosts - hostname of the backend server
+### Backend Variables
+
+backends - this is the list variable for the haproxy backends
+- ident - identifier name for the backend
+- http_check - define the http check command to determine health of backend
+- hosts - list of hostnames associated with the backend
 
 #### Sample backend definition
 ```
@@ -62,19 +68,25 @@ Example:
   hosts: test
   # Define the intended haproxy config parameters in the vars section below
   vars:
-    frontend:
-      ident: 'lb_solr'
-      acl: 'http_methods method POST DELETE PUT'
-      acl_cond: 'use_backend master_solr if http_methods'
-      default_be: 'slave_solr'
+    frontend_ident: 'lb_solr'
+    frontend_acls:
+      - acl: 'query_network_allowed src 0.0.0.0/0'
+      - acl: 'update_network_allowed src 164.67.0.0/16'
+      - acl: 'allow_query_path path_dir /select /terms'
+      - acl: 'restricted_path path_beg /solr'
+      - acl: 'http_methods method POST DELETE PUT'
+    frontend_aclconds:
+      - aclcond: 'http-request allow if allow_query_path query_network_allowed'
+      - aclcond: 'http-request deny if restricted_path !update_network_allowed'
+      - aclcond: 'use_backend master_solr if http_methods'
+    frontend_defaultbe: 'slave_solr'
     backends:
       - ident: master_solr
-        http_check: 'HEAD /solr/admin/ping HTTP/1.0\r\n'
-        hosts: [ t-w-solr-01 ]
+        http_check: 'HEAD /solr/www/admin/ping HTTP/1.0\r\n'
+        hosts: [ p-w-solrmaster01 ]
       - ident: slave_solr
-        http_check: 'HEAD /solr/admin/ping HTTP/1.0\r\n'
-        hosts: [ t-w-solr-02 ]
-
+        http_check: 'HEAD /solr/www/admin/ping HTTP/1.0\r\n'
+        hosts: [ p-w-solrslave01, p-w-solrslave02 ]
   roles:
     - { role: uclalib_role_haproxy }
 ```
