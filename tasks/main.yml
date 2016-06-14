@@ -15,6 +15,9 @@
 - name: Ensure HAproxy starts on boot
   service: name=haproxy enabled=yes
 
+- name: Put in place the library_campusvpn_ips file for any ACLs that may require limiting access to library or campus vpn ip addresses
+  copy: src=library_campusvpn_ips dest={{ haproxy_cfg_path }}/library_campusvpn_ips owner=root group=root mode=0644
+
 - name: Put in place the haproxy configuration file and validate syntax
   template: src=haproxycfg.j2 dest={{ haproxy_cfg_path }}/haproxy.cfg owner=root group=root mode=0644 validate='{{ haproxy_bin_path }} -c -q -V -f %s'
   notify:
