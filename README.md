@@ -1,6 +1,6 @@
 # UCLALib Ansible Role: HAProxy
 
-Deploys HAProxy on RHEL servers
+Deploys HAProxy on RHEL servers using a pre-built rpm package
 
 ## Dependencies
 
@@ -14,21 +14,23 @@ You can use this role to deploy HAProxy with a single frontend and as many backe
 
 ## Variables
 
-haproxy_rpm - name of the externally supplied haproxy RPM file that will be used to install
+* `haproxy_rpm` - name of the externally supplied haproxy RPM file that will be used to install
 
-haproxy_cfg_path - path to the haproxy configuration directory (e.g. `/etc/haproxy`)
+* `haproxy_cfg_path` - path to the haproxy configuration directory (e.g. `/etc/haproxy`)
 
-haproxy_bin_path - path to the haproxy binary (e.g. `/usr/sbin/haproxy`)
+* `haproxy_bin_path` - path to the haproxy binary (e.g. `/usr/sbin/haproxy`)
 
 ### Frontend Variables
 
-frontend_ident - identifier name for the haproxy frontend
+* `frontends` - this is the list variable for the haproxy frontends
 
-frontend_acls - list variable defining acl parameters for the frontend
+  * `ident` - identifier name for the haproxy frontend
 
-frontend_acl_conds - list variable defining acl conditions for the frontend acls
+  * `acls` - list variable defining acl parameters for the frontend
 
-frontend_default_be - define a default backend
+  * `acl_conds` - list variable defining acl conditions for the frontend acls
+
+  * `default_be` - define a default backend
 
 #### Sample frontend definition:
 ```
@@ -41,10 +43,10 @@ frontend:
 
 ### Backend Variables
 
-backends - this is the list variable for the haproxy backends
-- ident - identifier name for the backend
-- http_check - define the http check command to determine health of backend
-- hosts - list of hostnames associated with the backend
+* backends - this is the list variable for the haproxy backends
+  * ident - identifier name for the backend
+  * http_check - define the http check command to determine health of backend
+  * hosts - list of hostnames associated with the backend
 
 #### Sample backend definition
 ```
